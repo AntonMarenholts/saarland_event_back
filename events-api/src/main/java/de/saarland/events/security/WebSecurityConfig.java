@@ -22,11 +22,12 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity
 public class WebSecurityConfig {
 
-    // --- ИЗМЕНЕНИЕ: Внедряем зависимость через поле с @Autowired ---
+    // Внедряем зависимость через поле, а не через конструктор.
+    // Это разрывает циклическую зависимость при старте приложения.
     @Autowired
     private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
-    // --- ИЗМЕНЕНИЕ: Конструктор полностью удален ---
+    // Конструктор был удален, чтобы решить проблему с зависимостями.
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
