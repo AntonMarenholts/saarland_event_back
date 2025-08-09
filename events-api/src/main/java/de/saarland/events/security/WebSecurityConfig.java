@@ -1,7 +1,6 @@
 package de.saarland.events.security;
 
 import de.saarland.events.security.jwt.AuthTokenFilter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,12 +21,13 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity
 public class WebSecurityConfig {
 
-    // Внедряем зависимость через поле, а не через конструктор.
-    // Это разрывает циклическую зависимость при старте приложения.
-    @Autowired
-    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    // ▼▼▼ ВНЕДРЯЕМ НОВЫЙ ОБРАБОТЧИК (мы создадим его на следующем шаге) ▼▼▼
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
 
-    // Конструктор был удален, чтобы решить проблему с зависимостями.
+    public WebSecurityConfig(OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
+        this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
+    }
+    // ▲▲▲ КОНЕЦ ИЗМЕНЕНИЙ ▲▲▲
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -51,6 +51,7 @@ public class WebSecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // ▼▼▼ РАЗРЕШАЕМ ДОСТУП К ЭНДПОИНТАМ OAUTH2 ▼▼▼
                         .requestMatchers("/api/auth/**", "/login/oauth2/**").permitAll()
                         .requestMatchers("/api/events/**").permitAll()
                         .requestMatchers("/api/categories/**").permitAll()
@@ -60,6 +61,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/favorites/**").authenticated()
                         .anyRequest().authenticated()
                 )
+                // ▼▼▼ ДОБАВЛЯЕМ НОВЫЙ БЛОК ДЛЯ НАСТРОЙКИ GOOGLE ВХОДА ▼▼▼
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2LoginSuccessHandler)
                 );
@@ -69,4 +71,3 @@ public class WebSecurityConfig {
         return http.build();
     }
 }
-

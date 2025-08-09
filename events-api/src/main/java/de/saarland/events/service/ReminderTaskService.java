@@ -22,7 +22,7 @@ public class ReminderTaskService {
 
     // Запускать эту задачу каждую минуту
     // cron = "0 * * * * ?" означает "в 0 секунд каждой минуты"
-    @Scheduled(cron = "0 * * * * ?", initialDelay = 60000)
+    @Scheduled(cron = "0 * * * * ?")
     @Transactional
     public void processReminders() {
         System.out.println("Проверка напоминаний... " + LocalDateTime.now());
