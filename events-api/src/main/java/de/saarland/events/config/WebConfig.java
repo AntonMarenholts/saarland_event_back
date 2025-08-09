@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         // ▼▼▼ ИЗМЕНЕНИЕ ЗДЕСЬ ▼▼▼
         registry.addMapping("/**") // Меняем "/api/**" на "/**"
-                .allowedOrigins("http://localhost:5173")
+                .allowedOrigins("https://saarland-event-front-hq61.vercel.app")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
